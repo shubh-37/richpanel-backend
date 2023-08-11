@@ -3,13 +3,20 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide with a name']
+    required: [true, "Please provide with a name"],
+  },
+  stripeCustomerId: {
+    type: String,
+    required: [true, "Please provide with a Stripe customer ID"],
   },
   emailId: {
     type: String,
     required: [true, "Please provide username"],
-    match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please provide a valid email ID!'],
-    unique: [true, "This username already exists"],
+    match: [
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      "Please provide a valid email ID!",
+    ],
+    unique: [true, "This email already exists"],
   },
   password: {
     type: String,

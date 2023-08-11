@@ -3,6 +3,7 @@ const app = express();
 require("dotenv").config();
 const connectDB = require("./connect");
 const authController = require("./controllers/auth.js");
+const subscriptionController = require('./controllers/subscriptions');
 const cors = require("cors");
 
 //middlewares
@@ -14,6 +15,7 @@ try {
     const { Models } = await connectDB();
     console.log('Connection successful with Database');
     authController(app, Models);
+    subscriptionController(app, Models);
     app.listen(3000, console.log("server listening on port:3000"));
   }
   start();

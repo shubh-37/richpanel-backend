@@ -1,5 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2022-08-01",
+});
 
 function userDefinedException(message, statusCode) {
   this.message = message;
@@ -24,19 +27,31 @@ function auth(app, Models) {
       }
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
+      const stripeUserInstance = await stripe.customers.create({
+        email: emailId,
+      });
+      if (!stripeUserInstance) {
+        res
+          .status(424)
+          .json({
+            message: "Cannot create a customer in Stripe, please try again",
+          });
+      }
       const user = await User.create({
         name,
         emailId,
         password: hashedPassword,
+        stripeCustomerId: stripeUserInstance.id,
       });
+
+      if (!user) {
+        res.status(424).json({ message: "Cannot create a user" });
+      }
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "24 h",
       });
       return res.status(201).json({ token: token, emailId: emailId });
     } catch (error) {
-      // if (error.message.match("E11000 duplicate key error collection:")) {
-      //   return res.status(409).json({ message: "Duplicate User" });
-      // }
       return res.status(500).json({ message: error.message });
     }
   });
