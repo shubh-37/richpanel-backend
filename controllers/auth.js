@@ -31,11 +31,9 @@ function auth(app, Models) {
         email: emailId,
       });
       if (!stripeUserInstance) {
-        res
-          .status(424)
-          .json({
-            message: "Cannot create a customer in Stripe, please try again",
-          });
+        res.status(424).json({
+          message: "Cannot create a customer in Stripe, please try again",
+        });
       }
       const user = await User.create({
         name,
@@ -45,12 +43,12 @@ function auth(app, Models) {
       });
 
       if (!user) {
-        res.status(424).json({ message: "Cannot create a user" });
+        res.status(424).json({ message: "Couldn't create a user" });
       }
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "24 h",
       });
-      return res.status(201).json({ token: token, emailId: emailId });
+      return res.status(201).json({ token: token, user });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -84,8 +82,10 @@ function auth(app, Models) {
           expiresIn: "24 h",
         }
       );
-
-      return res.status(200).json({ token });
+      const formattedUserInstance = userInstance.toObject();
+      return res
+        .status(200)
+        .json({ token, userInstance: formattedUserInstance });
     } catch (error) {
       return res.status(error.statusCode).json({ message: error.message });
     }
