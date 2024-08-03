@@ -4,10 +4,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
 
 const auth = require("../middleware/authentication");
 
-function userDefinedException(message, statusCode) {
-  this.message = message;
-  this.statusCode = statusCode;
-}
 function subscription(app, Models) {
   const { Subscription } = Models;
 
